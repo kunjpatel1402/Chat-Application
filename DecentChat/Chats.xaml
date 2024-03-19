@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+            x:Class="DecentChat.Chats"
+            Title="Chats">
+    <Grid ColumnDefinitions="3*,7*">
+        <!-- Sidebar for contacts -->
+        <StackLayout Grid.Column="0">
+            <Button x:Name="MoreButton" Text="..." Clicked="MoreButton_Clicked" />
+            <Grid x:Name="AddContactPopup" IsVisible="False">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <!-- Add your form fields here -->
+                <Entry x:Name="Name_entry" Placeholder="Name" Grid.Row="0" />
+                <Entry x:Name="Hash_val_entry" Placeholder="Hash_val" Grid.Row="1" />
+                <Button Text="Add Contact" Clicked="AddContactButton_Clicked" Grid.Row="2" />
+            </Grid>
+
+            <Label Text="Contacts" FontSize="Large" />
+            <ListView x:Name="ContactsListView" 
+                  ItemsSource="{Binding contacts}"
+                  SelectedItem="{Binding selected_contact}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <TextCell Text="{Binding name, TargetNullValue = '.', FallbackValue = 'null'}" />
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+        </StackLayout>
+
+        <!-- Chat area -->
+        <StackLayout Grid.Column="1">
+            <Label Text="{Binding selected_contact.name}" FontSize="Large" />
+
+            <!-- Chat messages -->
+            <ListView x:Name="ChatListView" 
+          ItemsSource="{Binding selected_contact_chat}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Label Grid.Column="0" Text="{Binding Date}" />
+                                <Label Grid.Column="1" Text="{Binding From}" />
+                                <Label Grid.Column="2" Text="{Binding Text}" />
+                            </Grid>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+
+            <!-- Message input -->
+            <Entry x:Name="MessageEntry" Placeholder="Type a message..." />
+            <Button x:Name="SendButton" Text="Send" Clicked="send_button_func" />
+        </StackLayout>
+    </Grid>
+</ContentPage>

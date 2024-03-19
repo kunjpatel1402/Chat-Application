@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DecentChat.Set_next_nodes"
+             Title="Set_next_nodes">
+    <ScrollView>
+        <VerticalStackLayout
+        Padding="30,0"
+        Spacing="25">
+            <Entry x:Name = "node_name_text"
+            Text = "1" />
+            <Entry x:Name = "hash_val_text"
+            Text = "11" />
+            <Entry x:Name = "ip_address_text"
+            Text = "127.0.0.1" />
+            <Entry x:Name = "port_text"
+            Text = "5000" />
+            <Button x:Name = "next_node_submit_button"
+            Text = "Submit"
+            Clicked = "submit_node_info"/>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

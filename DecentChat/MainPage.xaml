@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DecentChat.MainPage">
+
+    <ScrollView>
+        <VerticalStackLayout
+            Padding="30,0"
+            Spacing="25">
+            <Entry x:Name = "node_name_text"
+               Text = "1" />
+            <Entry x:Name = "ip_address_text"
+                Text = "127.0.0.1" />
+            <Entry x:Name = "port_text"
+                Text = "5000" />
+            <HorizontalStackLayout>
+                <Button x:Name = "join_exsiting_node_button"
+                    Text = "Join exsisting node"
+                    Clicked = "join_exsiting_node"/>
+                <Button x:Name = "set_next_node_button"
+                    Text = "Set next node"
+                    Clicked = "set_next_node"/>
+            </HorizontalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

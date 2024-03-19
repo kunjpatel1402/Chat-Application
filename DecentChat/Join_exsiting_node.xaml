@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DecentChat.Join_exsiting_node"
+             Title="Join_exsiting_node">
+    <ScrollView>
+        <VerticalStackLayout
+     Padding="30,0"
+     Spacing="25">
+            <Entry x:Name = "ip_address_text"
+         Text = "127.0.0.1" />
+            <Entry x:Name = "port_text"
+         Text = "5000" />
+            <Button x:Name = "ip_address_and_port_submit_button"
+         Text = "Submit"
+         Clicked = "submit_ip_address_and_port_info"/>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
