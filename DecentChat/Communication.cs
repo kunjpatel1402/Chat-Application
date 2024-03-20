@@ -145,7 +145,10 @@ namespace DecentChat
                 {
                     sender_logger?.LogError(e.Message ?? "An error occurred");
                     // Console.WriteLine(e.ToString());
-                    return new Dictionary<string, object>();
+                    Dictionary<string, object> response = new Dictionary<string, object>();
+                    response["query"] = null;
+                    response["data"] = null;
+                    return response;
                 }
             }
             else

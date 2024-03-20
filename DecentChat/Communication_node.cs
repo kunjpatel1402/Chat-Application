@@ -215,8 +215,8 @@ namespace DecentChat
         public void Update_messages()
         {
             IEnumerable<DataRow> rows_filtered = this.chat.AsEnumerable().Where(row =>
-            (row.Field<int>("From") == this.hash_val && row.Field<int>("To") == this._selected_contact.hash_val) ||
-            (row.Field<int>("From") == this._selected_contact.hash_val && row.Field<int>("To") == this.hash_val)
+            (row.Field<int>("From") == this.hash_val && row.Field<int>("To") == this.selected_contact.hash_val) ||
+            (row.Field<int>("From") == this.selected_contact.hash_val && row.Field<int>("To") == this.hash_val)
             );
             List<Message> messages = rows_filtered.Select(row => new Message
             {
@@ -703,12 +703,23 @@ namespace DecentChat
                 return false;
             }
         }
+        public void print_table(DataTable dt, ILogger logger)
+        {
+            foreach (DataRow row in dt.Rows)
+            {
+                foreach (DataColumn col in dt.Columns)
+                {
+                    logger.LogInformation($"{col.ColumnName}: {row[col]}");
+                }
+            }
+        }
+
         public Dictionary<string, Object> recieve_function(Dictionary<string, Object> payload)
         {
             print_dict(payload, this.reciever_thread_logger);
             Dictionary<string, Object> ret;
-            try
-            {
+            //try
+            //{
                 string query = (string)payload["query"];
                 if (query == "find_successor")
                 {
@@ -736,22 +747,39 @@ namespace DecentChat
                 {
                     if ((int)payload["To"] == this.hash_val)
                     {
-                        bool rowExists = this.contact_list.AsEnumerable().Any(row => row.Field<int>("Hash_val") == (int)payload["To"]);
+                        this.reciever_thread_logger.LogInformation("Message is addresed to me");
+                        this.print_table(this.contact_list, this.reciever_thread_logger);
+                        bool rowExists = this.contact_list.AsEnumerable().Any(row => (row.Field<int>("Hash_val") == (int)payload["hash_val"]));
+                        this.reciever_thread_logger.LogInformation("Checked for existing contact " + rowExists.ToString());    
                         if (!rowExists)
                         {
-                            this.contacts.Add(new Contact((string)payload["node_name"], (int)payload["To"]));
-                            DataRow dr_ = this.contact_list.NewRow();
-                            dr_["Name"] = (string)payload["node_name"];
-                            dr_["Hash_val"] = (int)payload["To"];
-                            this.contact_list.Rows.Add(dr_); ;
+                        /*this.reciever_thread_logger.LogInformation("Adding new contact");
+                        Contact temp = new Contact((string)payload["node_name"], (int)payload["To"]);
+                    this.reciever_thread_logger.LogInformation("Created new object " + temp.ToString());
+                        this.contacts.Add(temp);
+                        this.reciever_thread_logger.LogInformation("1");
+                        DataRow dr_ = this.contact_list.NewRow();
+                    this.reciever_thread_logger.LogInformation("2");
+                    dr_["Name"] = (string)payload["node_name"];
+                    this.reciever_thread_logger.LogInformation("3");
+                    dr_["Hash_val"] = (int)payload["To"];
+                    this.reciever_thread_logger.LogInformation("4");
+                    this.contact_list.Rows.Add(dr_);
+                        this.reciever_thread_logger.LogInformation("Added new Contact");*/
                         }
+                        else
+                        {
+                            this.reciever_thread_logger.LogInformation("Contact exists");
+                        }
+                        this.reciever_thread_logger.LogInformation("Adding new message entry");
                         DataRow dr = this.chat.NewRow();
                         dr["Date"] = new DateTime(1970, 1, 1).AddMilliseconds(long.Parse(((string)payload["date_time"]).Substring(6, 13)));
                         dr["From"] = payload["hash_val"];
                         dr["To"] = payload["To"];
                         dr["Text"] = payload["data"];
                         this.chat.Rows.Add(dr);
-                        if ((int)dr["From"] == this.selected_contact.hash_val)   this.Update_messages();
+                        this.reciever_thread_logger.LogInformation("Message added to table");
+                        if ((this.selected_contact != null)&&((int)payload["hash_val"] == this.selected_contact.hash_val))   this.Update_messages();
                     }
                     else
                     {
@@ -802,13 +830,13 @@ namespace DecentChat
                 {
                     ret = this.get_dict("invalid_query", null);
                 }
-            }
-            catch (Exception e)
-            {
-                this.reciever_thread_logger.LogError("Error in recieve_function");
-                this.reciever_thread_logger.LogError(e.Message);
-                ret = this.get_dict("invalid_query", null);
-            }
+            //}
+            //catch (Exception e)
+            //{
+            //    this.reciever_thread_logger.LogError("Error in recieve_function");
+            //    this.reciever_thread_logger.LogError(e.Message);
+            //    ret = this.get_dict("invalid_query", null);
+            //}
             print_dict(ret, this.reciever_thread_logger);
             return ret;
         }
@@ -846,12 +874,17 @@ namespace DecentChat
         }
         public bool send_message(int hash_val, string message)
         {
+
+            this.message_thread_logger.LogInformation("Sending Message to  " + hash_val.ToString());
+            this.message_thread_logger.LogInformation(message);
             int st = hash_val;
             int tar = (hash_val + 10) % (int)Math.Pow(2, bits);
             int cnt = 0;
             Dictionary<string, Object> message_data = new Dictionary<string, Object>();
+            message_data["From"] = this.hash_val;
             message_data["To"] = hash_val;
             message_data["message"] = message;
+            message_data["date"] = DateTime.UtcNow;
             HashSet<int> visited = new HashSet<int>();
             while (check_l(st, tar, hash_val) && (!visited.Contains(hash_val)))
             {
@@ -869,8 +902,8 @@ namespace DecentChat
                     else
                     {
                         DataRow dr = this.others_chat.NewRow();
-                        dr["Date"] = DateTime.UtcNow;
-                        dr["From"] = this.hash_val;
+                        dr["Date"] = message_data["date"];
+                        dr["From"] = message_data["From"];
                         dr["To"] = message_data["To"];
                         dr["Text"] = message_data["message"];
                         others_chat.Rows.Add(dr);
@@ -913,16 +946,16 @@ namespace DecentChat
                                 dr["From"] = message.From;
                                 dr["To"] = message.To;
                                 dr["Text"] = message.Text;
-                                if (!chat.AsEnumerable().Any(row => row.Field<int>("From") == dr.Field<int>("From") &&
+                                if (!this.chat.AsEnumerable().Any(row => row.Field<int>("From") == dr.Field<int>("From") &&
                                     row.Field<int>("To") == dr.Field<int>("To") &&
                                     row.Field<string>("Text") == dr.Field<string>("Text") &&
                                     row.Field<DateTime>("Date") == dr.Field<DateTime>("Date")))
                                 {
-                                    chat.Rows.Add(dr);
+                                    this.chat.Rows.Add(dr);
                                     bool rowExists = this.contact_list.AsEnumerable().Any(row => row.Field<int>("Hash_val") == message.From);
                                     if (!rowExists)
                                     {
-                                        this.contacts.Add(new Contact((string)message.From.ToString(), (int)message.From));
+                                        //this.contacts.Add(new Contact((string)message.From.ToString(), (int)message.From));
                                         DataRow dr_ = this.contact_list.NewRow();
                                         dr_["Name"] = (string)message.From.ToString();
                                         dr_["Hash_val"] = (int)message.From;
