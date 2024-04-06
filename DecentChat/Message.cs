@@ -22,5 +22,9 @@ namespace DecentChat
 
         [DataMember(Name = "Text")]
         public string Text { get; set; }
+        [DataMember(Name = "sender_node_name")]
+        public string sender_node_name { get; set; }
+        [DataMember(Name = "hash_code")]
+        public int hash_code {  get; set; }
     }
 }

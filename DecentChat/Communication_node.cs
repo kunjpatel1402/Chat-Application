@@ -22,6 +22,7 @@ namespace DecentChat
     {
         private static Communication_node instance = null;
         private static readonly object padlock = new object();
+        private SynchronizationContext uiContext;
         public static Communication_node Instance
         {
             get
@@ -194,8 +195,11 @@ namespace DecentChat
                 {
                     _selected_contact = value;
                     OnPropertyChanged(nameof(selected_contact));
-                    if (_selected_contact != null) this.message_thread_logger.LogInformation("selected contact" + _selected_contact.ToString());
-                    Update_messages();
+                    if (_selected_contact != null)
+                    {
+                        this.message_thread_logger.LogInformation("selected contact" + _selected_contact.ToString());
+                        Update_messages();
+                    }
                 }
             } 
         }
@@ -330,6 +334,7 @@ namespace DecentChat
             {
                 payload["To"] = ((Dictionary<string, object>)data)["To"];
                 payload["data"] = ((Dictionary<string, object>)data)["message"];
+                payload["hash_code"] = ((Dictionary<string, object>)data)["hash_code"];
             }
             else payload["data"] = data;
             // sender_thread_logger.LogInformation("Get dict called with query " + query);
@@ -362,6 +367,7 @@ namespace DecentChat
             this.next_node = next_node;
             this.prev_node = prev_node;
             this.chat = new DataTable();
+            this.uiContext = SynchronizationContext.Current;
             var basePath = AppDomain.CurrentDomain.BaseDirectory;
             var fullPath = Path.Combine(basePath, this.node_name + ".xml");
             var fullPath_other = Path.Combine(basePath, this.node_name + "_others.xml");
@@ -375,9 +381,11 @@ namespace DecentChat
             {
                 this.chat.TableName = "Chat";
                 this.chat.Columns.Add("Date", typeof(DateTime));
+                this.chat.Columns.Add("sender_node_name", typeof(string));
                 this.chat.Columns.Add("From", typeof(int));
                 this.chat.Columns.Add("To", typeof(int));
                 this.chat.Columns.Add("Text", typeof(string));
+                this.chat.Columns.Add("hash_code", typeof(int));
             }
             this.others_chat = new DataTable();
             if (File.Exists(fullPath_other))
@@ -388,9 +396,11 @@ namespace DecentChat
             {
                 this.others_chat.TableName = "OthersChat";
                 this.others_chat.Columns.Add("Date", typeof(DateTime));
+                this.others_chat.Columns.Add("sender_node_name", typeof(string));
                 this.others_chat.Columns.Add("From", typeof(int));
                 this.others_chat.Columns.Add("To", typeof(int));
                 this.others_chat.Columns.Add("Text", typeof(string));
+                this.others_chat.Columns.Add("hash_code", typeof(int));
             }
             this.contact_list = new DataTable();
             if (File.Exists(fullPath_contacts))
@@ -411,7 +421,7 @@ namespace DecentChat
             {
                 this.contacts.Add(new Contact((string)row["Name"], (int)row["Hash_val"]));
             }
-                for (int i = 0; i < bits; i++)
+            for (int i = 0; i < bits; i++)
             {
                 if (this.fingers != null) this.fingers[i] = null;
 
@@ -606,7 +616,6 @@ namespace DecentChat
                 {
                     this.next_nodes[i] = null;
                     this.next_nodes[i - 1] = null;
-                    
                     this.sender_thread_logger.LogError("Error in update_next_nodes " + i);
                     this.sender_thread_logger.LogError(e.Message);
                     break;
@@ -625,7 +634,6 @@ namespace DecentChat
                     if (x)
                     {
                         this.next_nodes[1] = this.next_nodes[j];
-                        
                         break;
                     }
                     else
@@ -643,7 +651,6 @@ namespace DecentChat
                     sender_thread_logger.LogInformation(this.next_nodes[1].ToString());
                     this.next_node = this.next_nodes[1];
                     this.fingers[0] = this.next_nodes[1];
-                    
                 }
             }
             else
@@ -651,7 +658,6 @@ namespace DecentChat
                 sender_thread_logger.LogInformation("Next node is alive");
                 sender_thread_logger.LogInformation(this.next_node.ToString());
                 this.next_nodes[1] = this.next_node;
-                
             }
         }
         public Dictionary<string, Object> notify(Node prev_node)
@@ -659,7 +665,6 @@ namespace DecentChat
             if ((this.prev_node == null) || (check_e(this.prev_node.hash_val, this.hash_val, prev_node.hash_val)))
             {
                 this.prev_node = prev_node;
-                
             }
             return this.get_dict("notify", this.prev_node);
         }
@@ -718,8 +723,8 @@ namespace DecentChat
         {
             print_dict(payload, this.reciever_thread_logger);
             Dictionary<string, Object> ret;
-            //try
-            //{
+            try
+            {
                 string query = (string)payload["query"];
                 if (query == "find_successor")
                 {
@@ -753,19 +758,22 @@ namespace DecentChat
                         this.reciever_thread_logger.LogInformation("Checked for existing contact " + rowExists.ToString());    
                         if (!rowExists)
                         {
-                        /*this.reciever_thread_logger.LogInformation("Adding new contact");
-                        Contact temp = new Contact((string)payload["node_name"], (int)payload["To"]);
-                    this.reciever_thread_logger.LogInformation("Created new object " + temp.ToString());
-                        this.contacts.Add(temp);
+                        this.reciever_thread_logger.LogInformation("Adding new contact");
+                        Contact temp = new Contact((string)payload["node_name"], (int)payload["hash_val"]);
+                        this.reciever_thread_logger.LogInformation("Created new object " + temp.ToString());
+                        this.uiContext.Post(_ =>
+                        {
+                            this.contacts.Add(temp);
+                        }, null);
                         this.reciever_thread_logger.LogInformation("1");
                         DataRow dr_ = this.contact_list.NewRow();
-                    this.reciever_thread_logger.LogInformation("2");
-                    dr_["Name"] = (string)payload["node_name"];
-                    this.reciever_thread_logger.LogInformation("3");
-                    dr_["Hash_val"] = (int)payload["To"];
-                    this.reciever_thread_logger.LogInformation("4");
-                    this.contact_list.Rows.Add(dr_);
-                        this.reciever_thread_logger.LogInformation("Added new Contact");*/
+                        this.reciever_thread_logger.LogInformation("2");
+                        dr_["Name"] = (string)payload["node_name"];
+                        this.reciever_thread_logger.LogInformation("3");
+                        dr_["Hash_val"] = (int)payload["hash_val"];
+                        this.reciever_thread_logger.LogInformation("4");
+                        this.contact_list.Rows.Add(dr_);
+                        this.reciever_thread_logger.LogInformation("Added new Contact");
                         }
                         else
                         {
@@ -774,9 +782,11 @@ namespace DecentChat
                         this.reciever_thread_logger.LogInformation("Adding new message entry");
                         DataRow dr = this.chat.NewRow();
                         dr["Date"] = new DateTime(1970, 1, 1).AddMilliseconds(long.Parse(((string)payload["date_time"]).Substring(6, 13)));
+                        dr["sender_node_name"] = payload["node_name"];
                         dr["From"] = payload["hash_val"];
                         dr["To"] = payload["To"];
                         dr["Text"] = payload["data"];
+                        dr["hash_code"] = payload["hash_code"];
                         this.chat.Rows.Add(dr);
                         this.reciever_thread_logger.LogInformation("Message added to table");
                         if ((this.selected_contact != null)&&((int)payload["hash_val"] == this.selected_contact.hash_val))   this.Update_messages();
@@ -785,9 +795,11 @@ namespace DecentChat
                     {
                         DataRow dr = this.others_chat.NewRow();
                         dr["Date"] = new DateTime(1970, 1, 1).AddMilliseconds(long.Parse(((string)payload["date_time"]).Substring(6, 13)));
+                        dr["sender_node_name"] = payload["node_name"];
                         dr["From"] = payload["hash_val"];
                         dr["To"] = payload["To"];
                         dr["Text"] = payload["data"];
+                        dr["hash_code"] = payload["hash_code"];
                         this.others_chat.Rows.Add(dr);
                     }
                     this.message_thread_logger.LogInformation("Message recived from " + payload["ip_address"] + " " + payload["port"].ToString() + ":" + payload["data"]);
@@ -809,34 +821,35 @@ namespace DecentChat
                     {
                         Message message = new Message();
                         message.Date = (DateTime)row["Date"];
+                        message.sender_node_name = (string)row["sender_node_name"];
                         message.From = (int)row["From"];
                         message.To = (int)row["To"];
                         message.Text = (string)row["Text"];
+                        message.hash_code = (int)row["hash_code"];
                         messages[i] = message;
                         rowsToDelete.Add(row);
                         i++;
                     }
 
-                    foreach (DataRow row in rowsToDelete)
-                    {
-                        row.Delete();
-                    }
-                    others_chat.AcceptChanges();
+                    //foreach (DataRow row in rowsToDelete)
+                    //{
+                    //    row.Delete();
+                    //}
+                    //others_chat.AcceptChanges();
 
-                    others_chat.AcceptChanges();
                     ret = this.get_dict("get_pending_messages", messages);
                 }
                 else
                 {
                     ret = this.get_dict("invalid_query", null);
                 }
-            //}
-            //catch (Exception e)
-            //{
-            //    this.reciever_thread_logger.LogError("Error in recieve_function");
-            //    this.reciever_thread_logger.LogError(e.Message);
-            //    ret = this.get_dict("invalid_query", null);
-            //}
+            }
+            catch (Exception e)
+            {
+                this.reciever_thread_logger.LogError("Error in recieve_function");
+                this.reciever_thread_logger.LogError(e.Message);
+                ret = this.get_dict("invalid_query", null);
+            }
             print_dict(ret, this.reciever_thread_logger);
             return ret;
         }
@@ -881,10 +894,13 @@ namespace DecentChat
             int tar = (hash_val + 10) % (int)Math.Pow(2, bits);
             int cnt = 0;
             Dictionary<string, Object> message_data = new Dictionary<string, Object>();
+            message_data["sender_node_name"] = this.node_name; 
             message_data["From"] = this.hash_val;
             message_data["To"] = hash_val;
             message_data["message"] = message;
             message_data["date"] = DateTime.UtcNow;
+            int hash_code = message_data.GetHashCode();
+            message_data["hash_code"] = hash_code;
             HashSet<int> visited = new HashSet<int>();
             while (check_l(st, tar, hash_val) && (!visited.Contains(hash_val)))
             {
@@ -903,9 +919,11 @@ namespace DecentChat
                     {
                         DataRow dr = this.others_chat.NewRow();
                         dr["Date"] = message_data["date"];
+                        dr["sender_node_name"] = message_data["sender_node_name"];
                         dr["From"] = message_data["From"];
                         dr["To"] = message_data["To"];
                         dr["Text"] = message_data["message"];
+                        dr["hash_code"] = message_data["hash_code"];
                         others_chat.Rows.Add(dr);
                         cnt++;
                     }
@@ -916,7 +934,18 @@ namespace DecentChat
                     break;
                 }
             }
-            if (cnt > 0) return true;
+            if (cnt > 0)
+            {
+                DataRow dr = this.chat.NewRow();
+                dr["Date"] = message_data["date"];
+                dr["sender_node_name"] = message_data["sender_node_name"];
+                dr["From"] = message_data["From"];
+                dr["To"] = message_data["To"];
+                dr["Text"] = message_data["message"];
+                dr["hash_code"] = message_data["hash_code"];
+                chat.Rows.Add(dr);
+                return true;
+            }
             else return false;
         }
         public void get_pending_messages()
@@ -943,19 +972,21 @@ namespace DecentChat
                             {
                                 DataRow dr = this.chat.NewRow();
                                 dr["Date"] = message.Date;
+                                dr["sender_node_name"] = message.sender_node_name;
                                 dr["From"] = message.From;
                                 dr["To"] = message.To;
                                 dr["Text"] = message.Text;
-                                if (!this.chat.AsEnumerable().Any(row => row.Field<int>("From") == dr.Field<int>("From") &&
-                                    row.Field<int>("To") == dr.Field<int>("To") &&
-                                    row.Field<string>("Text") == dr.Field<string>("Text") &&
-                                    row.Field<DateTime>("Date") == dr.Field<DateTime>("Date")))
+                                dr["hash_code"] = message.hash_code;
+                                if (!this.chat.AsEnumerable().Any(row => row.Field<int>("hash_code") == dr.Field<int>("hash_code") ))
                                 {
                                     this.chat.Rows.Add(dr);
                                     bool rowExists = this.contact_list.AsEnumerable().Any(row => row.Field<int>("Hash_val") == message.From);
                                     if (!rowExists)
                                     {
-                                        //this.contacts.Add(new Contact((string)message.From.ToString(), (int)message.From));
+                                        this.uiContext.Post(_ =>
+                                        {
+                                            this.contacts.Add(new Contact((string)message.sender_node_name, (int)message.From));
+                                        }, null);
                                         DataRow dr_ = this.contact_list.NewRow();
                                         dr_["Name"] = (string)message.From.ToString();
                                         dr_["Hash_val"] = (int)message.From;
@@ -996,12 +1027,7 @@ namespace DecentChat
                         if (this.send_message(hash_val, message))
                         {
                             this.message_thread_logger.LogInformation("Message sent");
-                            DataRow dr = this.chat.NewRow();
-                            dr["Date"] = DateTime.UtcNow;
-                            dr["From"] = this.hash_val;
-                            dr["To"] = task["hash_val"];
-                            dr["Text"] = task["message"];
-                            chat.Rows.Add(dr);
+                            
                             this.Update_messages();
                         }
                         else
