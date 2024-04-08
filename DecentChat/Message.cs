@@ -26,5 +26,9 @@ namespace DecentChat
         public string sender_node_name { get; set; }
         [DataMember(Name = "hash_code")]
         public int hash_code {  get; set; }
+        [DataMember(Name = "alignment")]
+        public LayoutOptions Alignment { get; set; }
+        [DataMember(Name = "color")]
+        public Color BubbleColor { get; set; }
     }
 }

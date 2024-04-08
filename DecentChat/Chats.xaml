@@ -38,22 +38,27 @@
 
             <!-- Chat messages -->
             <ListView x:Name="ChatListView" 
-          ItemsSource="{Binding selected_contact_chat}">
+          ItemsSource="{Binding selected_contact_chat}" HasUnevenRows="True">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <Label Grid.Column="0" Text="{Binding Date}" />
-                                <Label Grid.Column="1" Text="{Binding From}" />
-                                <Label Grid.Column="2" Text="{Binding Text}" />
-                            </Grid>
+                            <StackLayout HorizontalOptions="FillAndExpand" Padding="10">
+                                <Frame BackgroundColor="{Binding BubbleColor}" 
+                               CornerRadius="10" 
+                               Padding="10" 
+                               HorizontalOptions="{Binding Alignment}">
+                                    <StackLayout>
+                                        <Label Text="{Binding Text}" />
+                                        <Label Text="{Binding Date, StringFormat='{0:HH:mm}'}" 
+                                       HorizontalOptions="EndAndExpand" 
+                                       FontAttributes="Italic" 
+                                       FontSize="Small" />
+                                    </StackLayout>
+                                </Frame>
+                            </StackLayout>
                         </ViewCell>
                     </DataTemplate>
+                    
                 </ListView.ItemTemplate>
             </ListView>
 

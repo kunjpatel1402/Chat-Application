@@ -228,10 +228,12 @@ namespace DecentChat
                 To = (int)row["To"],
                 Text = (string)row["Text"],
                 Date = DateTime.Parse(row["Date"].ToString()),
+                Alignment = (int)row["From"] != this.hash_val ? LayoutOptions.Start : LayoutOptions.EndAndExpand,
+                BubbleColor = (int)row["From"] != this.hash_val ? Color.FromHex("#ADD8E6") : Color.FromHex("#90EE90"),
             }).OrderBy(m => m.Date).ToList();
             foreach (var message in messages)
             {
-                this.message_thread_logger.LogInformation($"Date: {message.Date} From: {message.From}, Text: {message.Text}");
+                this.message_thread_logger.LogInformation($"Date: {message.Date} From: {message.From}, Text: {message.Text}, Alignment: {message.Alignment}");
             }
             this.selected_contact_chat = new ObservableCollection<Message>(messages);
         }
