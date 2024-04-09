@@ -1,27 +1,59 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="DecentChat.MainPage">
-
+             x:Class="DecentChat.MainPage"
+             Title="Getting to know you....">
     <ScrollView>
-        <VerticalStackLayout
-            Padding="30,0"
-            Spacing="25">
-            <Entry x:Name = "node_name_text"
-               Text = "1" />
-            <Entry x:Name = "ip_address_text"
-                Text = "127.0.0.1" />
-            <Entry x:Name = "port_text"
-                Text = "5000" />
-            <HorizontalStackLayout>
-                <Button x:Name = "join_exsiting_node_button"
-                    Text = "Join exsisting node"
-                    Clicked = "join_exsiting_node"/>
-                <Button x:Name = "set_next_node_button"
-                    Text = "Set next node"
-                    Clicked = "set_next_node"/>
-            </HorizontalStackLayout>
-        </VerticalStackLayout>
-    </ScrollView>
+        <Grid>
+            <Frame WidthRequest="400" HeightRequest="300" CornerRadius="10" Padding="5" BorderColor="Transparent" BackgroundColor="#2e2e2e">
+                <VerticalStackLayout
+                    Spacing="25"
+                    Padding="10"
+                    VerticalOptions="Center">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Label Text="User-name" VerticalOptions="Center" HorizontalTextAlignment="Start" Grid.Row="0" Grid.Column="0" />
+                        <Entry x:Name="node_name_text" Text="1" Grid.Row="0" Grid.Column="1" WidthRequest="275" Margin="0,0,0,10" />
 
+                        <Label Text="IP-address" VerticalOptions="Center" HorizontalTextAlignment="Start" Grid.Row="1" Grid.Column="0" />
+                        <Entry x:Name="ip_address_text" Text="127.0.0.1" Grid.Row="1" Grid.Column="1" WidthRequest="275" Margin="0,0,0,10" />
+
+                        <Label Text="Port" VerticalOptions="Center" HorizontalTextAlignment="Start" Grid.Row="2" Grid.Column="0" />
+                        <Entry x:Name="port_text" Text="5000" Grid.Row="2" Grid.Column="1" WidthRequest="275" Margin="0,0,0,10" />
+                    </Grid>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Button x:Name="join_exsiting_node_button"
+                                Text="Join exsisting node"
+                                Clicked="join_exsiting_node"
+                                Grid.Column="0"
+                                WidthRequest="150"
+                                BackgroundColor="#9880e5"
+                                TextColor="White"
+                                HorizontalOptions="Start"/>
+                        <Button x:Name="set_next_node_button"
+                                Text="Set next node"
+                                Clicked="set_next_node"
+                                Grid.Column="2"
+                                WidthRequest="150"
+                                BackgroundColor="#9880e5"
+                                TextColor="White"
+                                HorizontalOptions="End"/>
+                    </Grid>
+                </VerticalStackLayout>
+            </Frame>
+        </Grid>
+    </ScrollView>
 </ContentPage>

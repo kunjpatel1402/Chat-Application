@@ -49,10 +49,10 @@
                                HorizontalOptions="{Binding Alignment}">
                                     <StackLayout>
                                         <Label Text="{Binding Text}" />
-                                        <Label Text="{Binding Date, StringFormat='{0:HH:mm}'}" 
-                                       HorizontalOptions="EndAndExpand" 
-                                       FontAttributes="Italic" 
-                                       FontSize="Small" />
+                                        <Label Text="{Binding Date, StringFormat='{0:dd/MM/yyyy HH:mm}'}"
+                                            HorizontalOptions="EndAndExpand" 
+                                            FontAttributes="Italic" 
+                                            FontSize="Small" />
                                     </StackLayout>
                                 </Frame>
                             </StackLayout>
