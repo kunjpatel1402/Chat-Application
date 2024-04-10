@@ -197,11 +197,27 @@ namespace DecentChat
                     OnPropertyChanged(nameof(selected_contact));
                     if (_selected_contact != null)
                     {
+                        this.IsContactSelected = true;
                         this.message_thread_logger.LogInformation("selected contact" + _selected_contact.ToString());
                         Update_messages();
                     }
+                    else
+                    {
+                        this.IsContactSelected = false;
+                    }
                 }
             } 
+        }
+        private bool _isContactSelected;
+
+        public bool IsContactSelected
+        {
+            get => _isContactSelected;
+            set
+            {
+                _isContactSelected = value;
+                OnPropertyChanged(nameof(IsContactSelected));
+            }
         }
         private ObservableCollection<Message> _selected_contact_chat;
         public ObservableCollection<Message> selected_contact_chat 
@@ -375,6 +391,7 @@ namespace DecentChat
             var fullPath_other = Path.Combine(basePath, this.node_name + "_others.xml");
             var fullPath_contacts = Path.Combine(basePath, this.node_name + "_contacts.xml");
             this._selected_contact = new Contact("null", -1);
+            this.IsContactSelected = false;
             if (File.Exists(fullPath))
             {
                 chat.ReadXml(fullPath);
@@ -972,6 +989,7 @@ namespace DecentChat
                             object[] messages = (object[])ret["data"];
                             foreach (Message message in messages)
                             {
+                                this.message_thread_logger.LogInformation(message.hash_code.ToString() + " " + message.Text);
                                 DataRow dr = this.chat.NewRow();
                                 dr["Date"] = message.Date;
                                 dr["sender_node_name"] = message.sender_node_name;
@@ -1014,8 +1032,10 @@ namespace DecentChat
             {
                 sender_thread_logger.LogInformation("Updating FIngers");
                 this.fix_fingers();
+                OnPropertyChanged(nameof(Details));
                 sender_thread_logger.LogInformation("Updating Next Nodes");
                 this.stabilize();
+                OnPropertyChanged(nameof(Details));
                 message_thread_logger.LogInformation("Getting pending Messages");
                 this.get_pending_messages();
                 sender_thread_logger.LogInformation("Checking tasks");

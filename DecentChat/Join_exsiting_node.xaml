@@ -4,22 +4,36 @@
              x:Class="DecentChat.Join_exsiting_node"
              Title="Getting to know your friends...">
     <ScrollView>
-        <VerticalStackLayout
-     Padding="30,0"
-     Spacing="25">
-            <StackLayout Orientation="Horizontal">
-                <Label Text="IP-address" VerticalOptions="Center" />
-                <Entry x:Name="ip_address_text" Text="127.0.0.1" />
-            </StackLayout>
+        <Grid>
+            <Frame  WidthRequest="400" HeightRequest="200" CornerRadius="10" Padding="5" BorderColor="Transparent" BackgroundColor="#2e2e2e">
+                <VerticalStackLayout
+                    Spacing="25"
+                    Padding="10"
+                    VerticalOptions="Center">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Label Text="IP-address" VerticalOptions="Center" TextColor="White" Grid.Row="0" Grid.Column="0" />
+                        <Entry x:Name="ip_address_text" Text="127.0.0.1" TextColor="White" Grid.Row="0" Grid.Column="1" Margin="0,0,0,10" />
 
-            <StackLayout Orientation="Horizontal">
-                <Label Text="Port" VerticalOptions="Center" />
-                <Entry x:Name="port_text" Text="5000" />
-            </StackLayout>
+                        <Label Text="Port" VerticalOptions="Center" TextColor="White" Grid.Row="1" Grid.Column="0" />
+                        <Entry x:Name="port_text" Text="5000" TextColor="White" Grid.Row="1" Grid.Column="1" Margin="0,0,0,10" />
+                    </Grid>
 
-            <Button x:Name = "ip_address_and_port_submit_button"
-         Text = "Submit"
-         Clicked = "submit_ip_address_and_port_info"/>
-        </VerticalStackLayout>
+                    <Button x:Name = "ip_address_and_port_submit_button"
+                            Text = "Submit"
+                            Clicked = "submit_ip_address_and_port_info"
+                            WidthRequest="150"
+                            BackgroundColor="#9880e5"
+                            TextColor="White"/>
+                </VerticalStackLayout>
+            </Frame>
+        </Grid>
     </ScrollView>
 </ContentPage>

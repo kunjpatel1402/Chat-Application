@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
             x:Class="DecentChat.Chats"
             Title="{Binding node_name}">
-    <Grid ColumnDefinitions="3*,7*">
+    <Grid ColumnDefinitions="2*,6*,2*">
         <!-- Sidebar for contacts -->
         <StackLayout Grid.Column="0">
             <Button x:Name="MoreButton" Text="..." Clicked="MoreButton_Clicked" />
@@ -64,8 +64,14 @@
 
 
             <!-- Message input -->
-            <Entry x:Name="MessageEntry" Placeholder="Type a message..." />
-            <Button x:Name="SendButton" Text="Send" Clicked="send_button_func" />
+            <Entry x:Name="MessageEntry" Placeholder="Type a message..." IsVisible="{Binding IsContactSelected}"/>
+            <Button x:Name="SendButton" Text="Send" Clicked="send_button_func" IsVisible="{Binding IsContactSelected}"/>
+        </StackLayout>
+        <StackLayout Grid.Column="2">
+            <Label 
+            Text="{Binding Details}"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center" />
         </StackLayout>
     </Grid>
 </ContentPage>
