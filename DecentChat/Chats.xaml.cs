@@ -53,4 +53,11 @@ public partial class Chats : ContentPage
         Name_entry.Text = string.Empty;
         Hash_val_entry.Text = string.Empty;
     }
+    //private void OnEntryKeyDown(object sender, KeyEventArgs e)
+    //{
+    //    if (e.Key == Key.Enter)
+    //    {
+    //        SendButton.PerformClick();
+    //    }
+    //}
 }
