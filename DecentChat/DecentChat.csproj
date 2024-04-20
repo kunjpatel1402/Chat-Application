@@ -77,6 +77,9 @@
 	  <MauiXaml Update="Chats.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Edit_contact.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="my_Start_node.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

@@ -6,7 +6,7 @@
     <Grid ColumnDefinitions="2*,6*,2*">
         <!-- Sidebar for contacts -->
         <StackLayout Grid.Column="0">
-            <Button x:Name="MoreButton" Text="..." Clicked="MoreButton_Clicked" />
+            <Button x:Name="MoreButton" Text="Add Contact" Clicked="MoreButton_Clicked" />
             <Grid x:Name="AddContactPopup" IsVisible="False">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -25,7 +25,12 @@
                   SelectedItem="{Binding selected_contact}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <TextCell Text="{Binding name, TargetNullValue = '.', FallbackValue = 'null'}" />
+                        <ViewCell>
+                            <ViewCell.ContextActions>
+                                <MenuItem Text="Edit" Clicked="EditButton_Clicked" CommandParameter="{Binding .}" />
+                            </ViewCell.ContextActions>
+                            <Label Text="{Binding name, TargetNullValue = '.', FallbackValue = 'null'}" />
+                        </ViewCell>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
@@ -63,7 +68,7 @@
 
 
             <!-- Message input -->
-            <Entry x:Name="MessageEntry" Placeholder="Type a message..." IsVisible="{Binding IsContactSelected}" KeyDown="OnEntryKeyDown"/>
+            <Entry x:Name="MessageEntry" Placeholder="Type a message..." IsVisible="{Binding IsContactSelected}"/>
             <Button x:Name="SendButton" Text="Send" Clicked="send_button_func" IsVisible="{Binding IsContactSelected}"/>
         </StackLayout>
         <StackLayout Grid.Column="2">

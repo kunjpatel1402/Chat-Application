@@ -1,5 +1,6 @@
 using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
+using CommunityToolkit.Maui.Views;
 using System.Threading;
 namespace DecentChat;
 using MauiApp = Microsoft.Maui.Controls.Application;
@@ -32,6 +33,11 @@ public partial class Chats : ContentPage
             AddContactPopup.IsVisible = true;
         });
 
+    }
+
+    private void EditButton_Clicked(object sender, EventArgs e)
+    {
+        this.ShowPopup(new Edit_contact());
     }
     private void AddContactButton_Clicked(object sender, EventArgs e)
     {
