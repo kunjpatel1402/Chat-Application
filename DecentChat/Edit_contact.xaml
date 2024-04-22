@@ -5,9 +5,38 @@
              x:Class="DecentChat.Edit_contact"
              CanBeDismissedByTappingOutsideOfPopup="True">
     <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
+        <Frame  WidthRequest="400" CornerRadius="10" Padding="5" BorderColor="Transparent" BackgroundColor="#2e2e2e">
+            <VerticalStackLayout
+                Spacing="25"
+                Padding="10"
+                VerticalOptions="Center">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Label Text="Contact Name" VerticalOptions="Center" TextColor="White" Grid.Row="0" Grid.Column="0" />
+                    <Entry x:Name="Contact_name" Text="{Binding name}" TextColor="White" Grid.Row="0" Grid.Column="1" Margin="0,0,0,10" IsReadOnly="True" />
+
+                    <Label Text="Contact Hash_val" VerticalOptions="Center" TextColor="White" Grid.Row="1" Grid.Column="0" />
+                    <Entry x:Name="Contact_hash_val" Text="{Binding hash_val}" TextColor="White" Grid.Row="1" Grid.Column="1" Margin="0,0,0,10" IsReadOnly="True"/>
+
+                    <Label Text="New Contact Name" VerticalOptions="Center" TextColor="White" Grid.Row="2" Grid.Column="0" />
+                    <Entry x:Name="New_contact_name" TextColor="White" Grid.Row="2" Grid.Column="1" Margin="0,0,0,10" />
+                </Grid>
+
+                <Button x:Name = "new_contact_name_submit_button"
+                Text = "Submit"
+                Clicked = "new_contact_name_submit_func"
+                WidthRequest="150"
+                BackgroundColor="#9880e5"
+                TextColor="White"/>
+            </VerticalStackLayout>
+        </Frame>
     </VerticalStackLayout>
 </mct:Popup>

@@ -37,7 +37,15 @@ public partial class Chats : ContentPage
 
     private void EditButton_Clicked(object sender, EventArgs e)
     {
-        this.ShowPopup(new Edit_contact());
+        var menuItem = sender as MenuItem;
+        if (menuItem != null)
+        {
+            var contact = menuItem.CommandParameter as Contact;
+            if (contact != null)
+            { 
+                this.ShowPopup(new Edit_contact(contact));
+            }
+        }
     }
     private void AddContactButton_Clicked(object sender, EventArgs e)
     {

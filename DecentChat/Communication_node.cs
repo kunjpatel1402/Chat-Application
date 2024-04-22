@@ -256,7 +256,7 @@ namespace DecentChat
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected virtual void OnPropertyChanged(string propertyName)
+        public virtual void OnPropertyChanged(string propertyName)
         {
             var eventHandler = this.PropertyChanged;
             if (eventHandler != null)
@@ -278,7 +278,14 @@ namespace DecentChat
         private bool status;
         private Thread? reciever_thread;
         private Thread? sender_thread;
-
+        public void update_contact_list(string Name, int t_hash_val)
+        {
+            var row = contact_list.AsEnumerable().FirstOrDefault(r => r.Field<int>("Hash_val") == t_hash_val);
+            if (row != null)
+            {
+                row.SetField("Name", Name);
+            }
+        }
         private ILogger setup_logger(string logger_name, string filename)
         {
             var basePath = AppDomain.CurrentDomain.BaseDirectory;
