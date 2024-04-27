@@ -278,6 +278,43 @@ namespace DecentChat
         private bool status;
         private Thread? reciever_thread;
         private Thread? sender_thread;
+        static string EncryptStringAES(string plaintext, string key)
+        {
+            byte[] keyBytes = Encoding.UTF8.GetBytes(key);
+            byte[] iv = new byte[16]; // Generate a random IV (Initialization Vector)
+
+            using (Aes aesAlg = Aes.Create())
+            {
+                aesAlg.Key = keyBytes;
+                aesAlg.IV = iv;
+
+                ICryptoTransform encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
+
+                byte[] plaintextBytes = Encoding.UTF8.GetBytes(plaintext);
+                byte[] encryptedBytes = encryptor.TransformFinalBlock(plaintextBytes, 0, plaintextBytes.Length);
+
+                return Convert.ToBase64String(encryptedBytes);
+            }
+        }
+        private string DecryptStringAES(string encryptedBase64, string key)
+        {
+            byte[] keyBytes = Encoding.UTF8.GetBytes(key);
+            byte[] iv = new byte[16]; // Generate a random IV (Initialization Vector)
+
+            using (Aes aesAlg = Aes.Create())
+            {
+                aesAlg.Key = keyBytes;
+                aesAlg.IV = iv;
+
+                ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
+
+                byte[] encryptedBytes = Convert.FromBase64String(encryptedBase64);
+                byte[] decryptedBytes = decryptor.TransformFinalBlock(encryptedBytes, 0, encryptedBytes.Length);
+
+                return Encoding.UTF8.GetString(decryptedBytes);
+            }
+        }
+
         public void update_contact_list(string Name, int t_hash_val)
         {
             var row = contact_list.AsEnumerable().FirstOrDefault(r => r.Field<int>("Hash_val") == t_hash_val);
@@ -811,7 +848,7 @@ namespace DecentChat
                         dr["sender_node_name"] = payload["node_name"];
                         dr["From"] = payload["hash_val"];
                         dr["To"] = payload["To"];
-                        dr["Text"] = payload["data"];
+                        dr["Text"] = DecryptStringAES((string)payload["data"], "Your32ByteSecretKey1234567890111"); ;
                         dr["hash_code"] = payload["hash_code"];
                         this.chat.Rows.Add(dr);
                         this.reciever_thread_logger.LogInformation("Message added to table");
@@ -923,7 +960,7 @@ namespace DecentChat
             message_data["sender_node_name"] = this.node_name; 
             message_data["From"] = this.hash_val;
             message_data["To"] = hash_val;
-            message_data["message"] = message;
+            message_data["message"] = EncryptStringAES(message, "Your32ByteSecretKey1234567890111"); ;
             message_data["date"] = DateTime.UtcNow;
             int hash_code = message_data.GetHashCode();
             message_data["hash_code"] = hash_code;
@@ -967,7 +1004,7 @@ namespace DecentChat
                 dr["sender_node_name"] = message_data["sender_node_name"];
                 dr["From"] = message_data["From"];
                 dr["To"] = message_data["To"];
-                dr["Text"] = message_data["message"];
+                dr["Text"] = DecryptStringAES((string)message_data["message"], "Your32ByteSecretKey1234567890111") ;
                 dr["hash_code"] = message_data["hash_code"];
                 chat.Rows.Add(dr);
                 return true;
@@ -1002,7 +1039,7 @@ namespace DecentChat
                                 dr["sender_node_name"] = message.sender_node_name;
                                 dr["From"] = message.From;
                                 dr["To"] = message.To;
-                                dr["Text"] = message.Text;
+                                dr["Text"] = DecryptStringAES(message.Text, "Your32ByteSecretKey1234567890111");
                                 dr["hash_code"] = message.hash_code;
                                 if (!this.chat.AsEnumerable().Any(row => row.Field<int>("hash_code") == dr.Field<int>("hash_code") ))
                                 {
