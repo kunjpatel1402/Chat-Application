@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<mct:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+           xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+           xmlns:mct="clr-namespace:CommunityToolkit.Maui.Views;assembly=CommunityToolkit.Maui" 
+           x:Class="DecentChat.Message_popup"
+           CanBeDismissedByTappingOutsideOfPopup="True">
+    <VerticalStackLayout>
+        <Frame WidthRequest="400" CornerRadius="10" Padding="5" BorderColor="Transparent" BackgroundColor="#2e2e2e">
+            <VerticalStackLayout Spacing="25" Padding="10" VerticalOptions="Center">
+                <!-- Add your message content here -->
+                <Label Text="{Binding .}" VerticalOptions="Center" TextColor="White" />
+
+                <!-- You can add more labels, buttons, or other UI elements as needed -->
+
+                <Button Text="OK" Clicked="HandleOKButtonClicked" WidthRequest="150" BackgroundColor="#9880e5" TextColor="White"/>
+            </VerticalStackLayout>
+        </Frame>
+    </VerticalStackLayout>
+</mct:Popup>

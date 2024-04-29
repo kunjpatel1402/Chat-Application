@@ -55,17 +55,22 @@ public partial class Chats : ContentPage
         int hash_val = int.Parse(Hash_val_entry.Text);
         Console.WriteLine(contact_name + " " + hash_val);
         string msg = _node.Add_contact(contact_name, hash_val);
-        CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-        ToastDuration duration = ToastDuration.Short; 
-        double fontSize = 14;
-        var toast = Toast.Make(msg, duration, fontSize);
-        toast.Show(cancellationTokenSource.Token);
         Device.BeginInvokeOnMainThread(() =>
         {
             AddContactPopup.IsVisible = false;
         });
-        Name_entry.Text = string.Empty;
-        Hash_val_entry.Text = string.Empty;
+        //CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        //ToastDuration duration = ToastDuration.Short; 
+        //double fontSize = 14;
+        //var toast = Toast.Make(msg, duration, fontSize);
+        //toast.Show(cancellationTokenSource.Token);
+        //Device.BeginInvokeOnMainThread(() =>
+        //{
+        //    AddContactPopup.IsVisible = false;
+        //});
+        //Name_entry.Text = string.Empty;
+        //Hash_val_entry.Text = string.Empty;
+        this.ShowPopup(new Message_popup(msg));
     }
     //private void OnEntryKeyDown(object sender, KeyEventArgs e)
     //{
