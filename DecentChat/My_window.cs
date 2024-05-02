@@ -39,9 +39,14 @@ namespace DecentChat
         protected override void OnDestroying()
         {
             base.OnDestroying();
-            var _node = ((App)Application.Current).ServiceProvider.GetService<Communication_node>();
-            if (_node != null)
-            _node.Dispose();
+            var provider = ((App)Application.Current).ServiceProvider;
+            if (provider != null)
+            {
+                var _node = provider.GetService<Communication_node>();
+                if (_node != null)
+                    _node.Dispose();
+            }
+            
             // Code to run before the window is destroyed
         }
     }
