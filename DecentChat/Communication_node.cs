@@ -325,7 +325,7 @@ namespace DecentChat
         }
         private ILogger setup_logger(string logger_name, string filename)
         {
-            var basePath = AppDomain.CurrentDomain.BaseDirectory;
+            var basePath = "C:\\Users\\Kunj R. Patel\\Desktop\\App logs";
             var fullPath = Path.Combine(basePath, filename);
 
             if (File.Exists(fullPath))
@@ -430,7 +430,7 @@ namespace DecentChat
             this.prev_node = prev_node;
             this.chat = new DataTable();
             this.uiContext = SynchronizationContext.Current;
-            var basePath = AppDomain.CurrentDomain.BaseDirectory;
+            var basePath = "C:\\Users\\Kunj R. Patel\\Desktop\\App logs";
             var fullPath = Path.Combine(basePath, this.node_name + ".xml");
             var fullPath_other = Path.Combine(basePath, this.node_name + "_others.xml");
             var fullPath_contacts = Path.Combine(basePath, this.node_name + "_contacts.xml");
@@ -512,7 +512,7 @@ namespace DecentChat
         public void Dispose()
         {
 
-            var basePath = AppDomain.CurrentDomain.BaseDirectory;
+            var basePath = "C:\\Users\\Kunj R. Patel\\Desktop\\App logs";
             var fullPath = Path.Combine(basePath, this.node_name + ".xml");
             var fullPath_other = Path.Combine(basePath, this.node_name + "_others.xml");
             var fullPath_contacts = Path.Combine(basePath, this.node_name + "_contacts.xml");
