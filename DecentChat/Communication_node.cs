@@ -1107,7 +1107,7 @@ namespace DecentChat
                     }
                 }
                 sender_thread_logger.LogInformation("Sleeping");
-                Thread.Sleep(5000);
+                //Thread.Sleep(5000);
             }
         }
         public void add_task(Dictionary<string, Object> task)
